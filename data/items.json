@@ -1,0 +1,6 @@
+[
+  { "description": "PIPE LINE PVC", "size": "3 KG", "unit": "MTR", "loss": 0.037 },
+  { "description": "PIPE LINE PVC", "size": "4 KG", "unit": "MTR", "loss": 0.029 },
+  { "description": "HDPE PIPE", "size": "3 KG", "unit": "MTR", "loss": 0.021 },
+  { "description": "GI BEND", "size": "2.5", "unit": "NOS", "loss": 0.1 }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "surveyNo": 1,
+    "customer": "digvijay",
+    "village": "Kolhapur",
+    "discharge": "500",
+    "staticHeight": "",
+    "rows": [
+      {
+        "description": "HDPE PIPE",
+        "size": "3 KG",
+        "qty": 2,
+        "unit": "MTR",
+        "floss": 0.042,
+        "remark": ""
+      }
+    ],
+    "totalHead": 0.042,
+    "userId": "1770697721623"
+  }
+]
