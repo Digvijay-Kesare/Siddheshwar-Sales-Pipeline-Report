@@ -1,5 +1,4 @@
-import fs from "fs";
-import path from "path";
+import { supabaseServer } from "@/lib/supabaseServer";
 import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
@@ -16,30 +15,21 @@ export async function GET(request: Request) {
 
     const decoded: any = jwt.verify(token, "SECRET_KEY");
 
-    const filePath = path.join(process.cwd(), "data", "surveys.json");
+    const { data, error } = await supabaseServer
+      .from("surveys")
+      .select("*")
+      .eq("userid", decoded.userId);
 
-    if (!fs.existsSync(filePath)) {
+    if (error) {
+      console.log(error);
       return Response.json([]);
     }
 
-    const fileData = fs.readFileSync(filePath, "utf-8");
-
-    const surveys = fileData ? JSON.parse(fileData) : [];
-
-    if (!Array.isArray(surveys)) {
-      return Response.json([]);
-    }
-
-    const userSurveys = surveys.filter(
-      (s: any) => s.userId === decoded.userId
-    );
-
-    return Response.json(userSurveys);
+    return Response.json(data);
 
   } catch (error) {
 
     console.log("GET SURVEYS ERROR:", error);
-
     return Response.json([]);
 
   }
