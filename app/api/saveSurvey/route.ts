@@ -43,23 +43,23 @@ export async function POST(req: Request) {
     // Create survey object
     const newSurvey = {
 
-      surveyNo: lastSurveyNo + 1,
+  surveyNo: lastSurveyNo + 1,
 
-      customer: body.customer || "",
+  customer: body.customer || "",
 
-      village: body.village || "",
+  village: body.village || "",
 
-      discharge: body.discharge || "",
+  discharge: body.discharge || "",
 
-      staticheight: body.staticheight || "",
+  staticheight: body.staticHeight || "",
 
-      rows: body.rows || [],
+  rows: body.rows || [],
 
-      totalHead: body.totalHead || 0,
+  totalHead: body.totalHead || 0,
 
-      userid: body.userid || null
+  userid: body.userid || null
 
-    };
+};
 
     // Insert survey
     const { error: insertError } = await supabase
