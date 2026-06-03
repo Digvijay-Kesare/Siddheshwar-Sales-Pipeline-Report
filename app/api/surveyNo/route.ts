@@ -37,16 +37,16 @@ export async function GET() {
     if (!surveys || surveys.length === 0) {
 
       return Response.json({
-        nextSurveyNo: 1
+        nextsurveyNo: 1
       });
 
     }
 
     // Get latest survey number
-    const lastSurveyNo = Number(surveys[0].surveyNo);
+    const lastsurveyNo = Number(surveys[0].surveyNo);
 
     return Response.json({
-      nextSurveyNo: lastSurveyNo + 1
+      nextsurveyNo: lastsurveyNo + 1
     });
 
   } catch (error: any) {

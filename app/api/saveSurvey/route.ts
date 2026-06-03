@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Last survey number
-    const lastSurveyNo =
+    const lastsurveyNo =
       surveys && surveys.length > 0
         ? Number(surveys[0].surveyNo)
         : 0;
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     // Create new survey object
     const newSurvey = {
 
-      surveyNo: lastSurveyNo + 1,
+      surveyNo: lastsurveyNo + 1,
 
       customer: body.customer || "",
 
