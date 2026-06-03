@@ -14,8 +14,8 @@ export async function POST(req: Request) {
     // Get latest survey number
     const { data: surveys, error: fetchError } = await supabase
       .from("surveys")
-      .select("surveyno")
-      .order("surveyno", { ascending: false })
+      .select('"surveyNo"')
+      .order("surveyNo", { ascending: false })
       .limit(1);
 
     if (fetchError) {
@@ -34,16 +34,16 @@ export async function POST(req: Request) {
 
     }
 
-    // Generate next survey number
+    // Last survey number
     const lastSurveyNo =
       surveys && surveys.length > 0
-        ? Number(surveys[0].surveyno)
+        ? Number(surveys[0].surveyNo)
         : 0;
 
     // Create survey object
     const newSurvey = {
 
-      surveyno: lastSurveyNo + 1,
+      surveyNo: lastSurveyNo + 1,
 
       customer: body.customer || "",
 
