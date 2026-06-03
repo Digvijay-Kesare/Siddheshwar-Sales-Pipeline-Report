@@ -24,7 +24,7 @@ export async function POST(req: Request) {
           discharge: body.discharge,
           staticheight: body.staticHeight,
           rows: body.rows,
-          totalhead: body.totalHead,
+          totalHead: body.totalHead,
           userid: decoded.userId
         }
       ])
