@@ -1,18 +1,76 @@
-import fs from "fs";
-import path from "path";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const surveyNo = searchParams.get("surveyNo");
 
-  const filePath = path.join(process.cwd(), "data", "surveys.json");
+  try {
 
-  const fileData = fs.readFileSync(filePath, "utf-8");
-  const surveys = JSON.parse(fileData);
+    const { searchParams } = new URL(request.url);
 
-  const survey = surveys.find(
-    (s: any) => s.surveyNo == surveyNo
-  );
+    const surveyNo = searchParams.get("surveyNo");
 
-  return Response.json(survey || null);
+    // Validation
+    if (!surveyNo) {
+
+      return Response.json(
+        {
+          success: false,
+          message: "Survey number required"
+        },
+        {
+          status: 400
+        }
+      );
+
+    }
+
+    // Get survey from Supabase
+    const { data: survey, error } = await supabase
+      .from("surveys")
+      .select("*")
+      .eq("surveyNo", Number(surveyNo))
+      .single();
+
+    // Error handling
+    if (error) {
+
+      console.log("GET SURVEY ERROR:", error);
+
+      return Response.json(
+        {
+          success: false,
+          message: error.message
+        },
+        {
+          status: 500
+        }
+      );
+
+    }
+
+    return Response.json(survey || null);
+
+  } catch (error: any) {
+
+    console.log("FULL GET SURVEY ERROR:", error);
+
+    return Response.json(
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unknown error"
+      },
+      {
+        status: 500
+      }
+    );
+
+  }
+
 }
