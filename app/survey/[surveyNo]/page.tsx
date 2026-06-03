@@ -10,7 +10,7 @@ export default function SurveyViewPage(){
   const params = useParams();
   const router = useRouter();
 
-  const surveyNo = params?.surveyNo;
+  const surveyno = params?.surveyno;
 
   const [survey,setSurvey] = useState<any>(null);
 
@@ -18,11 +18,11 @@ export default function SurveyViewPage(){
 
   useEffect(()=>{
 
-    if(!surveyNo) return;
+    if(!surveyno) return;
 
     async function loadSurvey(){
 
-      const res = await fetch(`/api/getSurveyByNo?surveyNo=${surveyNo}`);
+      const res = await fetch(`/api/getSurveyByNo?surveyno=${surveyno}`);
       const data = await res.json();
 
       setSurvey(data);
@@ -31,7 +31,7 @@ export default function SurveyViewPage(){
 
     loadSurvey();
 
-  },[surveyNo]);
+  },[surveyno]);
 
 
 
@@ -45,7 +45,7 @@ export default function SurveyViewPage(){
 
     doc.setFontSize(12);
 
-    doc.text(`Survey No: ${survey.surveyNo}`,14,40);
+    doc.text(`Survey No: ${survey.surveyno}`,14,40);
     doc.text(`Customer: ${survey.customer}`,14,48);
     doc.text(`Village: ${survey.village}`,14,56);
     doc.text(`Discharge: ${survey.discharge}`,14,64);
@@ -82,7 +82,7 @@ export default function SurveyViewPage(){
   function downloadPDF(){
 
     const doc = generatePDF();
-    doc.save(`survey-${survey.surveyNo}.pdf`);
+    doc.save(`survey-${survey.surveyno}.pdf`);
 
   }
 
@@ -97,7 +97,7 @@ export default function SurveyViewPage(){
 
     const file = new File(
       [blob],
-      `survey-${survey.surveyNo}.pdf`,
+      `survey-${survey.surveyno}.pdf`,
       {type:"application/pdf"}
     );
 
@@ -141,7 +141,7 @@ export default function SurveyViewPage(){
         </button>
 
         <button
-          onClick={()=>router.push(`/survey/edit/${survey.surveyNo}`)}
+          onClick={()=>router.push(`/survey/edit/${survey.surveyno}`)}
           className="bg-yellow-500 text-white px-4 py-2 rounded"
         >
           Edit
@@ -168,7 +168,7 @@ export default function SurveyViewPage(){
       {/* Survey Details */}
 
       <h1 className="text-2xl font-bold">
-        Survey #{survey.surveyNo}
+        Survey #{survey.surveyno}
       </h1>
 
       <div className="grid grid-cols-2 gap-4">

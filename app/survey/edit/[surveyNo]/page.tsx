@@ -9,17 +9,17 @@ export default function EditSurveyPage() {
   const router = useRouter();
   const params = useParams();
 
-  const surveyNo = params?.surveyNo;
+  const surveyno = params?.surveyno;
 
   const [survey, setSurvey] = useState<any>(null);
 
   useEffect(() => {
 
-    if (!surveyNo) return;
+    if (!surveyno) return;
 
     async function load() {
 
-      const res = await fetch(`/api/getSurveyByNo?surveyNo=${surveyNo}`);
+      const res = await fetch(`/api/getSurveyByNo?surveyno=${surveyno}`);
       const data = await res.json();
 
       setSurvey(data);
@@ -28,7 +28,7 @@ export default function EditSurveyPage() {
 
     load();
 
-  }, [surveyNo]);
+  }, [surveyno]);
 
 
 

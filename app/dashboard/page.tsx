@@ -176,13 +176,13 @@ export default function DashboardPage() {
                   >
 
                     <td className="p-3 font-medium">
-                      {s.surveyNo}
+                      {s.surveyno}
                     </td>
 
 
 
                     <td
-                      onClick={()=>router.push(`/survey/${s.surveyNo}`)}
+                      onClick={()=>router.push(`/survey/${s.surveyno}`)}
                       className="p-3 text-blue-600 cursor-pointer hover:underline"
                     >
                       {s.customer}
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                     <td className="p-3 space-x-2">
 
                       <button
-                        onClick={()=>router.push(`/survey/edit/${s.surveyNo}`)}
+                        onClick={()=>router.push(`/survey/edit/${s.surveyno}`)}
                         className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm"
                       >
                         Edit
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                           if(!confirmDelete) return;
 
                           const res = await fetch(
-                            `/api/deleteSurvey?surveyNo=${s.surveyNo}`,
+                            `/api/deleteSurvey?surveyno=${s.surveyno}`,
                             {method:"DELETE"}
                           );
 
@@ -232,7 +232,7 @@ export default function DashboardPage() {
 
                             setSurveys(prev =>
                               prev.filter(
-                                survey => survey.surveyNo !== s.surveyNo
+                                survey => survey.surveyno !== s.surveyno
                               )
                             );
 

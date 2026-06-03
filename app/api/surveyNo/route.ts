@@ -12,8 +12,8 @@ export async function GET() {
     // Get latest survey number
     const { data: surveys, error } = await supabase
       .from("surveys")
-      .select('"surveyNo"')
-      .order("surveyNo", { ascending: false })
+      .select('"surveyno"')
+      .order("surveyno", { ascending: false })
       .limit(1);
 
     // Error handling
@@ -37,16 +37,16 @@ export async function GET() {
     if (!surveys || surveys.length === 0) {
 
       return Response.json({
-        nextsurveyNo: 1
+        nextsurveyno: 1
       });
 
     }
 
     // Get latest survey number
-    const lastsurveyNo = Number(surveys[0].surveyNo);
+    const lastsurveyno = Number(surveys[0].surveyno);
 
     return Response.json({
-      nextsurveyNo: lastsurveyNo + 1
+      nextsurveyno: lastsurveyno + 1
     });
 
   } catch (error: any) {

@@ -8,7 +8,7 @@ export default function NewSurveyPage() {
 
   const router = useRouter();
 
-  const [surveyNo] = useState(1);
+  const [surveyno] = useState(1);
   const [customer,setCustomer] = useState("");
   const [village,setVillage] = useState("");
   const [discharge,setDischarge] = useState("");
@@ -82,7 +82,7 @@ export default function NewSurveyPage() {
     }
 
     const surveyData = {
-      surveyNo,
+      surveyno,
       customer,
       village,
       discharge,

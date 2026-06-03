@@ -11,10 +11,10 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
 
-    const surveyNo = searchParams.get("surveyNo");
+    const surveyno = searchParams.get("surveyno");
 
     // Validation
-    if (!surveyNo) {
+    if (!surveyno) {
 
       return Response.json(
         {
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     const { data: survey, error } = await supabase
       .from("surveys")
       .select("*")
-      .eq("surveyNo", Number(surveyNo))
+      .eq("surveyno", Number(surveyno))
       .single();
 
     // Error handling

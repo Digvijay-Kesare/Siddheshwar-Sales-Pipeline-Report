@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
 
     const body = await request.json();
 
-    const { surveyNo } = body;
+    const { surveyno } = body;
 
     // Update survey in Supabase
     const { data, error } = await supabase
@@ -33,7 +33,7 @@ export async function PUT(request: Request) {
         userid: body.userid || null
 
       })
-      .eq("surveyNo", surveyNo)
+      .eq("surveyno", surveyno)
       .select();
 
     // Error handling

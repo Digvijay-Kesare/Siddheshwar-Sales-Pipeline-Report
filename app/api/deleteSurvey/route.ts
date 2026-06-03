@@ -11,10 +11,10 @@ export async function DELETE(req: Request) {
 
     const { searchParams } = new URL(req.url);
 
-    const surveyNo = searchParams.get("surveyNo");
+    const surveyno = searchParams.get("surveyno");
 
     // Validation
-    if (!surveyNo) {
+    if (!surveyno) {
 
       return Response.json(
         {
@@ -32,7 +32,7 @@ export async function DELETE(req: Request) {
     const { error } = await supabase
       .from("surveys")
       .delete()
-      .eq("surveyNo", Number(surveyNo));
+      .eq("surveyno", Number(surveyno));
 
     // Error handling
     if (error) {

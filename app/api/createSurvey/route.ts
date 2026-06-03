@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       .from("surveys")
       .insert([
         {
-          surveyNo: body.surveyNo,
+          surveyno: body.surveyno,
           customer: body.customer,
           village: body.village,
           discharge: body.discharge,
