@@ -29,13 +29,13 @@ export async function GET(request: Request) {
     }
 
     // Fetch survey
-    const { data: survey, error } = await supabase
+    const { data, error } = await supabase
       .from("surveys")
       .select("*")
       .eq("surveyno", Number(surveyNo))
-      .single();
+      .limit(1);
 
-    // Error
+    // Error handling
     if (error) {
 
       console.log("GET SURVEY ERROR:", error);
@@ -52,6 +52,28 @@ export async function GET(request: Request) {
 
     }
 
+    // Get first survey safely
+    const survey =
+      data && data.length > 0
+        ? data[0]
+        : null;
+
+    // Not found
+    if (!survey) {
+
+      return Response.json(
+        {
+          success: false,
+          message: "Survey not found"
+        },
+        {
+          status: 404
+        }
+      );
+
+    }
+
+    // Success
     return Response.json(survey);
 
   } catch (error: any) {
