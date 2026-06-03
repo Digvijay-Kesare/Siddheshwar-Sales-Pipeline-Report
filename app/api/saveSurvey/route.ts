@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   try {
 
-    // Get frontend body
+    // Get request body
     const body = await req.json();
 
     console.log("BODY:", body);
@@ -17,11 +17,12 @@ export async function POST(req: Request) {
     // Get latest survey number
     const { data: surveys, error: fetchError } = await supabase
       .from("surveys")
-      .select('"surveyno"')
+      .select("surveyno")
+      .not("surveyno", "is", null)
       .order("surveyno", { ascending: false })
       .limit(1);
 
-    // Fetch error
+    // Handle fetch error
     if (fetchError) {
 
       console.log("FETCH ERROR:", fetchError);
@@ -38,16 +39,20 @@ export async function POST(req: Request) {
 
     }
 
-    // Last survey number
-    const lastsurveyno =
-      surveys && surveys.length > 0
+    // Get last survey number safely
+    const lastSurveyNo =
+      surveys &&
+      surveys.length > 0 &&
+      surveys[0].surveyno !== null
         ? Number(surveys[0].surveyno)
         : 0;
 
-    // Create new survey object
+    console.log("LAST SURVEY NO:", lastSurveyNo);
+
+    // Create survey object
     const newSurvey = {
 
-      surveyno: lastsurveyno + 1,
+      surveyno: lastSurveyNo + 1,
 
       customer: body.customer || "",
 
@@ -67,13 +72,13 @@ export async function POST(req: Request) {
 
     console.log("NEW SURVEY:", newSurvey);
 
-    // Insert into Supabase
+    // Insert survey
     const { data, error: insertError } = await supabase
       .from("surveys")
       .insert([newSurvey])
       .select();
 
-    // Insert error
+    // Handle insert error
     if (insertError) {
 
       console.log("INSERT ERROR:", insertError);
