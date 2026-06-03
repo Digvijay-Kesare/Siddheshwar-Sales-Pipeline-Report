@@ -23,10 +23,25 @@ export async function POST(req: Request) {
         ? Number(surveys[0].surveyNo)
         : 0;
 
-    // New survey object
+    // Create survey object matching DB columns
     const newSurvey = {
-      ...body,
-      surveyNo: lastSurveyNo + 1
+
+      surveyNo: lastSurveyNo + 1,
+
+      customer: body.customer,
+
+      village: body.village,
+
+      discharge: body.discharge,
+
+      staticheight: body.staticheight,
+
+      rows: body.rows,
+
+      totalHead: body.totalHead,
+
+      userid: body.userid || null
+
     };
 
     // Insert into Supabase
@@ -61,7 +76,7 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
 
-    console.log("SAVE SURVEY ERROR:", error);
+    console.log(error);
 
     return Response.json(
       {
