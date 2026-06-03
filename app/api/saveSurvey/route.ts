@@ -1,5 +1,9 @@
-import fs from "fs";
-import path from "path";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(req: Request) {
 
@@ -7,37 +11,67 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    const filePath = path.join(process.cwd(), "data", "surveys.json");
+    // Get last survey number
+    const { data: surveys } = await supabase
+      .from("surveys")
+      .select("surveyNo")
+      .order("surveyNo", { ascending: false })
+      .limit(1);
 
-    let surveys: any[] = [];
-
-    if (fs.existsSync(filePath)) {
-      const fileData = fs.readFileSync(filePath, "utf-8");
-      surveys = fileData ? JSON.parse(fileData) : [];
-    }
-
-    // 🔥 Ensure unique survey number
     const lastSurveyNo =
-      surveys.length > 0
-        ? Math.max(...surveys.map((s: any) => Number(s.surveyNo || 0)))
+      surveys && surveys.length > 0
+        ? Number(surveys[0].surveyNo)
         : 0;
 
+    // New survey object
     const newSurvey = {
       ...body,
       surveyNo: lastSurveyNo + 1
     };
 
-    surveys.push(newSurvey);
+    // Insert into Supabase
+    const { error } = await supabase
+      .from("surveys")
+      .insert([newSurvey]);
 
-    fs.writeFileSync(filePath, JSON.stringify(surveys, null, 2));
+    if (error) {
 
-    return Response.json({ success: true });
+      console.log(error);
 
-  } catch (error) {
+      return Response.json(
+        {
+          success: false,
+          message: error.message
+        },
+        {
+          status: 500
+        }
+      );
+
+    }
+
+    return Response.json(
+      {
+        success: true
+      },
+      {
+        status: 200
+      }
+    );
+
+  } catch (error: any) {
 
     console.log("SAVE SURVEY ERROR:", error);
 
-    return Response.json({ success: false });
+    return Response.json(
+      {
+        success: false,
+        message: error.message
+      },
+      {
+        status: 500
+      }
+    );
 
   }
 
