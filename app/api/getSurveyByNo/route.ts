@@ -11,10 +11,10 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
 
-    const surveyno = searchParams.get("surveyno");
+    const surveyNo = searchParams.get("surveyNo");
 
     // Validation
-    if (!surveyno) {
+    if (!surveyNo) {
 
       return Response.json(
         {
@@ -28,14 +28,14 @@ export async function GET(request: Request) {
 
     }
 
-    // Get survey from Supabase
+    // Fetch survey
     const { data: survey, error } = await supabase
       .from("surveys")
       .select("*")
-      .eq("surveyno", Number(surveyno))
+      .eq("surveyno", Number(surveyNo))
       .single();
 
-    // Error handling
+    // Error
     if (error) {
 
       console.log("GET SURVEY ERROR:", error);
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
 
     }
 
-    return Response.json(survey || null);
+    return Response.json(survey);
 
   } catch (error: any) {
 
