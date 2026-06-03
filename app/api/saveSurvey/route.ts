@@ -11,52 +11,69 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    // Get last survey number
-    const { data: surveys } = await supabase
+    // Get latest survey number
+    const { data: surveys, error: fetchError } = await supabase
       .from("surveys")
-      .select("surveyNo")
-      .order("surveyNo", { ascending: false })
+      .select("surveyno")
+      .order("surveyno", { ascending: false })
       .limit(1);
 
+    if (fetchError) {
+
+      console.log(fetchError);
+
+      return Response.json(
+        {
+          success: false,
+          message: fetchError.message
+        },
+        {
+          status: 500
+        }
+      );
+
+    }
+
+    // Generate next survey number
     const lastSurveyNo =
       surveys && surveys.length > 0
-        ? Number(surveys[0].surveyNo)
+        ? Number(surveys[0].surveyno)
         : 0;
 
-    // Create survey object matching DB columns
+    // Create survey object
     const newSurvey = {
 
-      surveyNo: lastSurveyNo + 1,
+      surveyno: lastSurveyNo + 1,
 
-      customer: body.customer,
+      customer: body.customer || "",
 
-      village: body.village,
+      village: body.village || "",
 
-      discharge: body.discharge,
+      discharge: body.discharge || "",
 
-      staticheight: body.staticheight,
+      staticheight: body.staticheight || "",
 
-      rows: body.rows,
+      rows: body.rows || [],
 
-      totalHead: body.totalHead,
+      totalHead: body.totalHead || 0,
 
       userid: body.userid || null
 
     };
 
-    // Insert into Supabase
-    const { error } = await supabase
+    // Insert survey
+    const { error: insertError } = await supabase
       .from("surveys")
       .insert([newSurvey]);
 
-    if (error) {
+    if (insertError) {
 
-      console.log(error);
+      console.log(insertError);
 
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: insertError.message
         },
         {
           status: 500
@@ -67,7 +84,8 @@ export async function POST(req: Request) {
 
     return Response.json(
       {
-        success: true
+        success: true,
+        message: "Survey saved successfully"
       },
       {
         status: 200
@@ -76,7 +94,7 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
 
-    console.log(error);
+    console.log("SAVE SURVEY ERROR:", error);
 
     return Response.json(
       {
