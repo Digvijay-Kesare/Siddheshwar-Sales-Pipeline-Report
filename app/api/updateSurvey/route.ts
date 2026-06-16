@@ -6,66 +6,67 @@ const supabase = createClient(
 );
 
 export async function PUT(request: Request) {
-
   try {
-
     const body = await request.json();
+
+    console.log("UPDATE BODY:", body);
 
     const { surveyno } = body;
 
-    // Update survey in Supabase
+    if (!surveyno) {
+      return Response.json(
+        {
+          success: false,
+          message: "Survey number is required",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
     const { data, error } = await supabase
       .from("surveys")
       .update({
-
         customer: body.customer,
-
         village: body.village,
-
         discharge: body.discharge,
-
         staticheight: body.staticHeight,
-
         rows: body.rows,
-
         totalHead: body.totalHead,
-
-        userid: body.userid || null
-
+        userid: body.userid || null,
       })
-      .eq("surveyno", surveyno)
-      .select();
+      .eq("surveyno", Number(surveyno))
+      .select()
+      .single();
 
-    // Error handling
     if (error) {
-
       console.log("UPDATE ERROR:", error);
 
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
+
+    console.log("UPDATED DATA:", data);
 
     return Response.json(
       {
         success: true,
         message: "Survey updated successfully",
-        data
+        data,
       },
       {
-        status: 200
+        status: 200,
       }
     );
-
-  } catch (error: any) {
-
+  } catch (error) {
     console.log("FULL UPDATE ERROR:", error);
 
     return Response.json(
@@ -74,13 +75,11 @@ export async function PUT(request: Request) {
         message:
           error instanceof Error
             ? error.message
-            : "Unknown error"
+            : "Unknown error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }

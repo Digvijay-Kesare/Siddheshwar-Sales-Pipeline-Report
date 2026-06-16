@@ -6,66 +6,42 @@ const supabase = createClient(
 );
 
 export async function GET() {
-
   try {
-
-    // Get latest survey number
-    const { data: surveys, error } = await supabase
+    const { data, error } = await supabase
       .from("surveys")
-      .select('"surveyno"')
+      .select("surveyno")
       .order("surveyno", { ascending: false })
-      .limit(1);
+      .limit(1)
+      .single();
 
-    // Error handling
-    if (error) {
-
-      console.log("SURVEY NO ERROR:", error);
-
+    if (error && error.code !== "PGRST116") {
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
-
-    // If no surveys exist
-    if (!surveys || surveys.length === 0) {
-
-      return Response.json({
-        nextsurveyno: 1
-      });
-
-    }
-
-    // Get latest survey number
-    const lastsurveyno = Number(surveys[0].surveyno);
 
     return Response.json({
-      nextsurveyno: lastsurveyno + 1
+      nextsurveyno: data ? data.surveyno + 1 : 1,
     });
 
-  } catch (error: any) {
-
-    console.log("FULL SURVEY NO ERROR:", error);
-
+  } catch (error) {
     return Response.json(
       {
         success: false,
         message:
           error instanceof Error
             ? error.message
-            : "Unknown error"
+            : "Unknown error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }
