@@ -11,44 +11,81 @@ export default function EditSurveyPage() {
   const surveyNo = params?.surveyNo as string;
 
   const [survey, setSurvey] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!surveyNo) return;
 
-    async function load() {
-      const res = await fetch(
-        `/api/getSurveyByNo?surveyNo=${surveyNo}`
-      );
+    async function loadSurvey() {
+      try {
+        const res = await fetch(
+          `/api/getSurveyByNo?surveyNo=${surveyNo}`
+        );
+
+        if (!res.ok) {
+          alert("Failed to load survey");
+          router.push("/dashboard");
+          return;
+        }
+
+        const data = await res.json();
+
+        setSurvey(data);
+      } catch (error) {
+        console.error("LOAD SURVEY ERROR:", error);
+        alert("Failed to load survey");
+        router.push("/dashboard");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadSurvey();
+  }, [surveyNo, router]);
+
+  async function handleUpdate(updatedData: any) {
+    try {
+      const res = await fetch("/api/updateSurvey", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...updatedData,
+          surveyno: Number(surveyNo),
+        }),
+      });
+
+      const result = await res.json();
 
       if (!res.ok) {
-        console.error("Failed to load survey");
+        alert(result.message || "Failed to update survey");
         return;
       }
 
-      const data = await res.json();
-
-      setSurvey(data);
-    }
-
-    load();
-  }, [surveyNo]);
-
-  async function handleUpdate(data: any) {
-    const res = await fetch("/api/updateSurvey", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
+      alert("Survey updated successfully");
       router.push("/dashboard");
+
+    } catch (error) {
+      console.error("UPDATE ERROR:", error);
+      alert("Failed to update survey");
     }
   }
 
+  if (loading) {
+    return (
+      <div className="p-6 text-center">
+        Loading survey...
+      </div>
+    );
+  }
+
   if (!survey) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="p-6 text-center text-red-600">
+        Survey not found
+      </div>
+    );
   }
 
   return (
