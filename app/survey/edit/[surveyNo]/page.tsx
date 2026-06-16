@@ -32,7 +32,7 @@ export default function EditSurveyPage() {
 
         setSurvey(data);
       } catch (error) {
-        console.error("LOAD SURVEY ERROR:", error);
+        console.error(error);
         alert("Failed to load survey");
         router.push("/dashboard");
       } finally {
@@ -43,7 +43,7 @@ export default function EditSurveyPage() {
     loadSurvey();
   }, [surveyNo, router]);
 
-  async function handleUpdate(updatedData: any) {
+  async function handleUpdate(data: any) {
     try {
       const res = await fetch("/api/updateSurvey", {
         method: "PUT",
@@ -51,38 +51,35 @@ export default function EditSurveyPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...updatedData,
+          ...data,
           surveyno: Number(surveyNo),
         }),
       });
 
-      const result = await res.json();
-
-      if (!res.ok) {
+      if (res.ok) {
+        alert("Survey updated successfully");
+        router.push("/dashboard");
+      } else {
+        const result = await res.json();
         alert(result.message || "Failed to update survey");
-        return;
       }
-
-      alert("Survey updated successfully");
-      router.push("/dashboard");
-
     } catch (error) {
-      console.error("UPDATE ERROR:", error);
+      console.error(error);
       alert("Failed to update survey");
     }
   }
 
   if (loading) {
     return (
-      <div className="p-6 text-center">
-        Loading survey...
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
       </div>
     );
   }
 
   if (!survey) {
     return (
-      <div className="p-6 text-center text-red-600">
+      <div className="min-h-screen flex items-center justify-center text-red-600">
         Survey not found
       </div>
     );

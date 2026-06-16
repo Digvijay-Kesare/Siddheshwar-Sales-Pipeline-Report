@@ -1,30 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import items from "@/data/items.json";
 
-export default function SurveyForm({ initialData = {}, onSubmit }: any) {
-
-  const [customer, setCustomer] = useState(initialData.customer || "");
-  const [village, setVillage] = useState(initialData.village || "");
-  const [discharge, setDischarge] = useState(initialData.discharge || "");
-  const [staticHeight, setStaticHeight] = useState(initialData.staticHeight || "");
+export default function SurveyForm({
+  initialData = {},
+  onSubmit,
+}: any) {
+  const [customer, setCustomer] = useState("");
+  const [village, setVillage] = useState("");
+  const [discharge, setDischarge] = useState("");
+  const [staticHeight, setStaticHeight] = useState("");
 
   const [selectedDesc, setSelectedDesc] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [qty, setQty] = useState("");
   const [remark, setRemark] = useState("");
 
-  const [rows, setRows] = useState(initialData.rows || []);
+  const [rows, setRows] = useState<any[]>([]);
 
-  const totalHead = rows.reduce((sum: number, r: any) => sum + r.floss, 0);
+  useEffect(() => {
+    if (initialData) {
+      setCustomer(initialData.customer || "");
+      setVillage(initialData.village || "");
+      setDischarge(initialData.discharge || "");
+      setStaticHeight(initialData.staticheight || "");
+      setRows(initialData.rows || []);
+    }
+  }, [initialData]);
+
+  const totalHead = rows.reduce(
+    (sum: number, row: any) => sum + Number(row.floss),
+    0
+  );
 
   function addItem() {
+    if (!selectedDesc || !selectedSize || !qty) {
+      alert("Select description, size and quantity");
+      return;
+    }
 
     const selectedItem = items.find(
-      (i) =>
-        i.description === selectedDesc &&
-        i.size === selectedSize
+      (item) =>
+        item.description === selectedDesc &&
+        item.size === selectedSize
     );
 
     if (!selectedItem) return;
@@ -35,29 +54,22 @@ export default function SurveyForm({ initialData = {}, onSubmit }: any) {
       qty: Number(qty),
       unit: selectedItem.unit,
       floss: Number(qty) * selectedItem.loss,
-      remark
+      remark,
     };
 
     setRows([...rows, newRow]);
 
+    setSelectedDesc("");
+    setSelectedSize("");
     setQty("");
     setRemark("");
   }
 
-  function deleteRow(index: number) {
-
-    const updated = rows.filter((_: any, i: number) => i !== index);
-    setRows(updated);
-
+  function removeItem(index: number) {
+    setRows(rows.filter((_, i) => i !== index));
   }
 
   async function handleSubmit() {
-
-    if (!onSubmit) {
-      console.error("onSubmit not passed to SurveyForm");
-      return;
-    }
-
     await onSubmit({
       ...initialData,
       customer,
@@ -65,187 +77,267 @@ export default function SurveyForm({ initialData = {}, onSubmit }: any) {
       discharge,
       staticHeight,
       rows,
-      totalHead
+      totalHead,
     });
-
   }
 
   return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          {initialData?.surveyno
+            ? "Edit Pipeline Survey"
+            : "Create Pipeline Survey"}
+        </h1>
 
-    <div className="p-6">
+        {/* Survey Details */}
+        <div className="bg-white shadow rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Survey Details
+          </h2>
 
-      {/* Header Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <input
+              type="text"
+              placeholder="Customer"
+              value={customer}
+              onChange={(e) =>
+                setCustomer(e.target.value)
+              }
+              className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+            <input
+              type="text"
+              placeholder="Village"
+              value={village}
+              onChange={(e) =>
+                setVillage(e.target.value)
+              }
+              className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
 
-        <input
-          className="border p-2"
-          placeholder="Customer"
-          value={customer}
-          onChange={(e) => setCustomer(e.target.value)}
-        />
+            <input
+              type="number"
+              placeholder="Discharge"
+              value={discharge}
+              onChange={(e) =>
+                setDischarge(e.target.value)
+              }
+              className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
 
-        <input
-          className="border p-2"
-          placeholder="Village"
-          value={village}
-          onChange={(e) => setVillage(e.target.value)}
-        />
+            <input
+              type="number"
+              placeholder="Static Height"
+              value={staticHeight}
+              onChange={(e) =>
+                setStaticHeight(e.target.value)
+              }
+              className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+        </div>
 
-        <input
-          className="border p-2"
-          placeholder="Discharge"
-          value={discharge}
-          onChange={(e) => setDischarge(e.target.value)}
-        />
+        {/* Add Item */}
+        <div className="bg-white shadow rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Add Pipeline Components
+          </h2>
 
-        <input
-          className="border p-2"
-          placeholder="Static Height"
-          value={staticHeight}
-          onChange={(e) => setStaticHeight(e.target.value)}
-        />
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <select
+              value={selectedDesc}
+              onChange={(e) => {
+                setSelectedDesc(e.target.value);
+                setSelectedSize("");
+              }}
+              className="border rounded-lg p-3"
+            >
+              <option value="">
+                Description
+              </option>
 
-      </div>
+              {[
+                ...new Set(
+                  items.map(
+                    (item) =>
+                      item.description
+                  )
+                ),
+              ].map((desc) => (
+                <option key={desc}>
+                  {desc}
+                </option>
+              ))}
+            </select>
 
-      {/* Item Input Row */}
+            <select
+              value={selectedSize}
+              onChange={(e) =>
+                setSelectedSize(
+                  e.target.value
+                )
+              }
+              className="border rounded-lg p-3"
+            >
+              <option value="">
+                Size
+              </option>
 
-      <div className="flex flex-wrap gap-3 mb-4">
+              {items
+                .filter(
+                  (item) =>
+                    item.description ===
+                    selectedDesc
+                )
+                .map((item, index) => (
+                  <option key={index}>
+                    {item.size}
+                  </option>
+                ))}
+            </select>
 
-        {/* Description Dropdown */}
+            <input
+              type="number"
+              placeholder="Qty"
+              value={qty}
+              onChange={(e) =>
+                setQty(e.target.value)
+              }
+              className="border rounded-lg p-3"
+            />
 
-        <select
-          className="border p-2"
-          value={selectedDesc}
-          onChange={(e) => {
-            setSelectedDesc(e.target.value);
-            setSelectedSize("");
-          }}
-        >
-          <option value="">Description</option>
+            <input
+              type="text"
+              placeholder="Remark"
+              value={remark}
+              onChange={(e) =>
+                setRemark(
+                  e.target.value
+                )
+              }
+              className="border rounded-lg p-3"
+            />
 
-          {[...new Set(items.map((i) => i.description))].map((desc) => (
-            <option key={desc}>{desc}</option>
-          ))}
-        </select>
+            <button
+              onClick={addItem}
+              className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4"
+            >
+              Add
+            </button>
+          </div>
+        </div>
 
-        {/* Size Dropdown */}
-
-        <select
-          className="border p-2"
-          value={selectedSize}
-          onChange={(e) => setSelectedSize(e.target.value)}
-        >
-          <option value="">Size</option>
-
-          {items
-            .filter((i) => i.description === selectedDesc)
-            .map((item, idx) => (
-              <option key={idx}>{item.size}</option>
-            ))}
-        </select>
-
-        <input
-          type="number"
-          placeholder="Qty"
-          className="border p-2"
-          value={qty}
-          onChange={(e) => setQty(e.target.value)}
-        />
-
-        <input
-          placeholder="Remark"
-          className="border p-2"
-          value={remark}
-          onChange={(e) => setRemark(e.target.value)}
-        />
-
-        <button
-          onClick={addItem}
-          className="bg-green-600 text-white px-4 rounded"
-        >
-          Add
-        </button>
-
-      </div>
-
-      {/* Items Table */}
-
-      <table className="w-full border mb-6">
-
-        <thead className="bg-gray-100">
-
-          <tr>
-            <th className="border p-2">Description</th>
-            <th className="border p-2">Size</th>
-            <th className="border p-2">Qty</th>
-            <th className="border p-2">Unit</th>
-            <th className="border p-2">F.Loss</th>
-            <th className="border p-2">Remark</th>
-            <th className="border p-2">Action</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {rows.length === 0 ? (
-
-            <tr>
-              <td colSpan={7} className="text-center p-3 border">
-                No items added
-              </td>
-            </tr>
-
-          ) : (
-
-            rows.map((row: any, index: number) => (
-
-              <tr key={index} className="text-center">
-
-                <td className="border p-2">{row.description}</td>
-                <td className="border p-2">{row.size}</td>
-                <td className="border p-2">{row.qty}</td>
-                <td className="border p-2">{row.unit}</td>
-                <td className="border p-2">{row.floss.toFixed(3)}</td>
-                <td className="border p-2">{row.remark}</td>
-
-                <td className="border p-2">
-
-                  <button
-                    onClick={() => deleteRow(index)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
+        {/* Table */}
+        <div className="bg-white shadow rounded-xl overflow-x-auto mb-6">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3 text-left">
+                  Description
+                </th>
+                <th className="p-3 text-left">
+                  Size
+                </th>
+                <th className="p-3 text-left">
+                  Qty
+                </th>
+                <th className="p-3 text-left">
+                  Unit
+                </th>
+                <th className="p-3 text-left">
+                  F.Loss
+                </th>
+                <th className="p-3 text-left">
+                  Remark
+                </th>
+                <th className="p-3 text-left">
+                  Action
+                </th>
               </tr>
+            </thead>
 
-            ))
+            <tbody>
+              {rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="text-center p-6 text-gray-500"
+                  >
+                    No items added
+                  </td>
+                </tr>
+              ) : (
+                rows.map(
+                  (
+                    row,
+                    index
+                  ) => (
+                    <tr
+                      key={index}
+                      className="border-t"
+                    >
+                      <td className="p-3">
+                        {
+                          row.description
+                        }
+                      </td>
+                      <td className="p-3">
+                        {row.size}
+                      </td>
+                      <td className="p-3">
+                        {row.qty}
+                      </td>
+                      <td className="p-3">
+                        {row.unit}
+                      </td>
+                      <td className="p-3">
+                        {row.floss.toFixed(
+                          3
+                        )}
+                      </td>
+                      <td className="p-3">
+                        {row.remark}
+                      </td>
 
-          )}
+                      <td className="p-3">
+                        <button
+                          onClick={() =>
+                            removeItem(
+                              index
+                            )
+                          }
+                          className="text-red-600 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
 
-        </tbody>
+        {/* Total + Submit */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-lg font-semibold">
+            Total Head:{" "}
+            {totalHead.toFixed(3)}
+          </div>
 
-      </table>
-
-      {/* Total Head */}
-
-      <div className="font-semibold mb-4">
-        Total Head: {totalHead.toFixed(3)}
+          <button
+            onClick={handleSubmit}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow"
+          >
+            {initialData?.surveyno
+              ? "Update Survey"
+              : "Save Survey"}
+          </button>
+        </div>
       </div>
-
-      <button
-        onClick={handleSubmit}
-        className="bg-blue-600 text-white px-6 py-2 rounded"
-      >
-        Save Survey
-      </button>
-
     </div>
-
   );
-
 }
