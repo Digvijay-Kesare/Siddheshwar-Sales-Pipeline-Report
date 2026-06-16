@@ -5,62 +5,56 @@ import { useParams, useRouter } from "next/navigation";
 import SurveyForm from "@/components/SurveyForm";
 
 export default function EditSurveyPage() {
-
   const router = useRouter();
   const params = useParams();
 
-  const surveyno = params?.surveyno;
+  const surveyNo = params?.surveyNo as string;
 
   const [survey, setSurvey] = useState<any>(null);
 
   useEffect(() => {
-
-    if (!surveyno) return;
+    if (!surveyNo) return;
 
     async function load() {
+      const res = await fetch(
+        `/api/getSurveyByNo?surveyNo=${surveyNo}`
+      );
 
-      const res = await fetch(`/api/getSurveyByNo?surveyno=${surveyno}`);
+      if (!res.ok) {
+        console.error("Failed to load survey");
+        return;
+      }
+
       const data = await res.json();
 
       setSurvey(data);
-
     }
 
     load();
+  }, [surveyNo]);
 
-  }, [surveyno]);
-
-
-
-  async function handleUpdate(data:any){
-
-    const res = await fetch("/api/updateSurvey",{
-      method:"PUT",
-      headers:{
-        "Content-Type":"application/json"
+  async function handleUpdate(data: any) {
+    const res = await fetch("/api/updateSurvey", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
-    if(res.ok){
+    if (res.ok) {
       router.push("/dashboard");
     }
-
   }
 
-
-
-  if(!survey){
+  if (!survey) {
     return <div className="p-6">Loading...</div>;
   }
 
-
-
   return (
     <SurveyForm
-  initialData={survey}
-  onSubmit={handleUpdate}
-/>
+      initialData={survey}
+      onSubmit={handleUpdate}
+    />
   );
-
 }
