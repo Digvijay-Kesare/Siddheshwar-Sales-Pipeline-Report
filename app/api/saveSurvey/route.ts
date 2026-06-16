@@ -6,93 +6,45 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
-
   try {
-
     // Get request body
     const body = await req.json();
 
     console.log("BODY:", body);
 
-    // Get latest survey number
-    const { data: surveys, error: fetchError } = await supabase
-      .from("surveys")
-      .select("surveyno")
-      .not("surveyno", "is", null)
-      .order("surveyno", { ascending: false })
-      .limit(1);
-
-    // Handle fetch error
-    if (fetchError) {
-
-      console.log("FETCH ERROR:", fetchError);
-
-      return Response.json(
-        {
-          success: false,
-          message: fetchError.message
-        },
-        {
-          status: 500
-        }
-      );
-
-    }
-
-    // Get last survey number safely
-    const lastSurveyNo =
-      surveys &&
-      surveys.length > 0 &&
-      surveys[0].surveyno !== null
-        ? Number(surveys[0].surveyno)
-        : 0;
-
-    console.log("LAST SURVEY NO:", lastSurveyNo);
-
     // Create survey object
     const newSurvey = {
-
-      surveyno: lastSurveyNo + 1,
-
       customer: body.customer || "",
-
       village: body.village || "",
-
       discharge: body.discharge || "",
-
       staticheight: body.staticHeight || "",
-
       rows: body.rows || [],
-
       totalHead: body.totalHead || 0,
-
-      userid: body.userid || null
-
+      userid: body.userid || null,
     };
 
     console.log("NEW SURVEY:", newSurvey);
 
     // Insert survey
-    const { data, error: insertError } = await supabase
+    const { data, error } = await supabase
       .from("surveys")
-      .insert([newSurvey])
-      .select();
+      .insert(newSurvey)
+      .select()
+      .single();
 
     // Handle insert error
-    if (insertError) {
-
-      console.log("INSERT ERROR:", insertError);
+    if (error) {
+      console.log("INSERT ERROR:", error);
 
       return Response.json(
         {
           success: false,
-          message: insertError.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
 
     console.log("INSERTED DATA:", data);
@@ -102,15 +54,14 @@ export async function POST(req: Request) {
       {
         success: true,
         message: "Survey saved successfully",
-        data
+        surveyno: data.surveyno, // Auto-generated value
+        data,
       },
       {
-        status: 200
+        status: 201,
       }
     );
-
-  } catch (error: any) {
-
+  } catch (error) {
     console.log("FULL ERROR:", error);
 
     return Response.json(
@@ -119,13 +70,11 @@ export async function POST(req: Request) {
         message:
           error instanceof Error
             ? error.message
-            : "Unknown error"
+            : "Unknown error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }
