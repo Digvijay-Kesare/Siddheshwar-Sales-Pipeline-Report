@@ -6,26 +6,21 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-
   try {
-
     const body = await request.json();
-
     const { name, email, password } = body;
 
     // Validation
     if (!name || !email || !password) {
-
       return Response.json(
         {
           success: false,
-          message: "All fields are required"
+          message: "All fields are required",
         },
         {
-          status: 400
+          status: 400,
         }
       );
-
     }
 
     // Check if user exists
@@ -36,17 +31,15 @@ export async function POST(request: Request) {
       .single();
 
     if (existingUser) {
-
       return Response.json(
         {
           success: false,
-          message: "User already exists"
+          message: "User already exists with this email",
         },
         {
-          status: 400
+          status: 400,
         }
       );
-
     }
 
     // Insert user
@@ -56,50 +49,44 @@ export async function POST(request: Request) {
         {
           name,
           email,
-          password
-        }
+          password,
+        },
       ])
       .select();
 
     if (error) {
-
+      console.error("Signup error:", error);
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
 
     return Response.json(
       {
         success: true,
         message: "Signup successful",
-        user: data
+        user: data,
       },
       {
-        status: 201
+        status: 201,
       }
     );
-
-  } catch (err: any) {
-
-    console.log(err);
-
+  } catch (err: unknown) {
+    console.error("Signup exception:", err);
     return Response.json(
       {
         success: false,
-        message: err.message
+        message: err instanceof Error ? err.message : "Server error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }

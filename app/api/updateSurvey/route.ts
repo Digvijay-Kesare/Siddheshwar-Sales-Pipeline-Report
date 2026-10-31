@@ -9,8 +9,6 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
 
-    console.log("UPDATE BODY:", body);
-
     const { surveyno } = body;
 
     if (!surveyno) {
@@ -28,12 +26,12 @@ export async function PUT(request: Request) {
     const { data, error } = await supabase
       .from("surveys")
       .update({
-        customer: body.customer,
-        village: body.village,
-        discharge: body.discharge,
-        staticheight: body.staticHeight,
-        rows: body.rows,
-        totalHead: body.totalHead,
+        customer: body.customer || "",
+        village: body.village || "",
+        discharge: body.discharge || "",
+        staticheight: body.staticHeight || body.staticheight || "",
+        rows: body.rows || [],
+        totalHead: body.totalHead || 0,
         userid: body.userid || null,
       })
       .eq("surveyno", Number(surveyno))
@@ -41,8 +39,7 @@ export async function PUT(request: Request) {
       .single();
 
     if (error) {
-      console.log("UPDATE ERROR:", error);
-
+      console.error("UPDATE SURVEY ERROR:", error);
       return Response.json(
         {
           success: false,
@@ -53,8 +50,6 @@ export async function PUT(request: Request) {
         }
       );
     }
-
-    console.log("UPDATED DATA:", data);
 
     return Response.json(
       {
@@ -67,15 +62,12 @@ export async function PUT(request: Request) {
       }
     );
   } catch (error) {
-    console.log("FULL UPDATE ERROR:", error);
-
+    console.error("FULL UPDATE ERROR:", error);
     return Response.json(
       {
         success: false,
         message:
-          error instanceof Error
-            ? error.message
-            : "Unknown error",
+          error instanceof Error ? error.message : "Unknown error",
       },
       {
         status: 500,

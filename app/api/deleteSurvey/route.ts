@@ -6,26 +6,21 @@ const supabase = createClient(
 );
 
 export async function DELETE(req: Request) {
-
   try {
-
     const { searchParams } = new URL(req.url);
-
     const surveyno = searchParams.get("surveyno");
 
     // Validation
     if (!surveyno) {
-
       return Response.json(
         {
           success: false,
-          message: "Survey number required"
+          message: "Survey number required",
         },
         {
-          status: 400
+          status: 400,
         }
       );
-
     }
 
     // Delete survey from Supabase
@@ -36,48 +31,38 @@ export async function DELETE(req: Request) {
 
     // Error handling
     if (error) {
-
-      console.log("DELETE ERROR:", error);
-
+      console.error("DELETE ERROR:", error);
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
 
     return Response.json(
       {
         success: true,
-        message: "Survey deleted successfully"
+        message: "Survey deleted successfully",
       },
       {
-        status: 200
+        status: 200,
       }
     );
-
-  } catch (error: any) {
-
-    console.log("FULL DELETE ERROR:", error);
-
+  } catch (error: unknown) {
+    console.error("FULL DELETE ERROR:", error);
     return Response.json(
       {
         success: false,
         message:
-          error instanceof Error
-            ? error.message
-            : "Unknown error"
+          error instanceof Error ? error.message : "Unknown error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }

@@ -1,6 +1,46 @@
 [
+  { "description": "PIPE LINE PVC 63mm", "size": "2.5 KG/cm²", "unit": "MTR", "loss": 0.042 },
+  { "description": "PIPE LINE PVC 63mm", "size": "4.0 KG/cm²", "unit": "MTR", "loss": 0.038 },
+  { "description": "PIPE LINE PVC 75mm", "size": "2.5 KG/cm²", "unit": "MTR", "loss": 0.028 },
+  { "description": "PIPE LINE PVC 75mm", "size": "4.0 KG/cm²", "unit": "MTR", "loss": 0.024 },
+  { "description": "PIPE LINE PVC 90mm", "size": "2.5 KG/cm²", "unit": "MTR", "loss": 0.018 },
+  { "description": "PIPE LINE PVC 90mm", "size": "4.0 KG/cm²", "unit": "MTR", "loss": 0.015 },
+  { "description": "PIPE LINE PVC 110mm", "size": "2.5 KG/cm²", "unit": "MTR", "loss": 0.009 },
+  { "description": "PIPE LINE PVC 110mm", "size": "4.0 KG/cm²", "unit": "MTR", "loss": 0.007 },
+
   { "description": "PIPE LINE PVC", "size": "3 KG", "unit": "MTR", "loss": 0.037 },
   { "description": "PIPE LINE PVC", "size": "4 KG", "unit": "MTR", "loss": 0.029 },
   { "description": "HDPE PIPE", "size": "3 KG", "unit": "MTR", "loss": 0.021 },
-  { "description": "GI BEND", "size": "2.5", "unit": "NOS", "loss": 0.1 }
+
+  { "description": "HDPE PIPE 63mm", "size": "PN 4 (4.0 KG)", "unit": "MTR", "loss": 0.035 },
+  { "description": "HDPE PIPE 75mm", "size": "PN 4 (4.0 KG)", "unit": "MTR", "loss": 0.022 },
+  { "description": "HDPE PIPE 90mm", "size": "PN 4 (4.0 KG)", "unit": "MTR", "loss": 0.014 },
+  { "description": "HDPE PIPE 110mm", "size": "PN 4 (4.0 KG)", "unit": "MTR", "loss": 0.008 },
+
+  { "description": "GI BEND", "size": "2.5", "unit": "NOS", "loss": 0.1 },
+  { "description": "GI BEND", "size": "2.0 Inch", "unit": "NOS", "loss": 0.12 },
+  { "description": "GI BEND", "size": "2.5 Inch", "unit": "NOS", "loss": 0.10 },
+  { "description": "GI BEND", "size": "3.0 Inch", "unit": "NOS", "loss": 0.08 },
+  { "description": "GI BEND", "size": "4.0 Inch", "unit": "NOS", "loss": 0.06 },
+
+  { "description": "PVC BEND 90°", "size": "63mm (2.0 Inch)", "unit": "NOS", "loss": 0.09 },
+  { "description": "PVC BEND 90°", "size": "75mm (2.5 Inch)", "unit": "NOS", "loss": 0.07 },
+  { "description": "PVC BEND 90°", "size": "90mm (3.0 Inch)", "unit": "NOS", "loss": 0.05 },
+  { "description": "PVC BEND 90°", "size": "110mm (4.0 Inch)", "unit": "NOS", "loss": 0.04 },
+
+  { "description": "FOOT VALVE", "size": "2.5 Inch", "unit": "NOS", "loss": 0.85 },
+  { "description": "FOOT VALVE", "size": "3.0 Inch", "unit": "NOS", "loss": 0.70 },
+  { "description": "FOOT VALVE", "size": "4.0 Inch", "unit": "NOS", "loss": 0.55 },
+
+  { "description": "NON RETURN VALVE (NRV)", "size": "2.5 Inch", "unit": "NOS", "loss": 0.45 },
+  { "description": "NON RETURN VALVE (NRV)", "size": "3.0 Inch", "unit": "NOS", "loss": 0.35 },
+  { "description": "NON RETURN VALVE (NRV)", "size": "4.0 Inch", "unit": "NOS", "loss": 0.28 },
+
+  { "description": "BALL / GATE VALVE", "size": "2.5 Inch", "unit": "NOS", "loss": 0.15 },
+  { "description": "BALL / GATE VALVE", "size": "3.0 Inch", "unit": "NOS", "loss": 0.12 },
+  { "description": "BALL / GATE VALVE", "size": "4.0 Inch", "unit": "NOS", "loss": 0.09 },
+
+  { "description": "TEE JOINT", "size": "75mm (Equal)", "unit": "NOS", "loss": 0.18 },
+  { "description": "TEE JOINT", "size": "90mm (Equal)", "unit": "NOS", "loss": 0.14 },
+  { "description": "REDUCER", "size": "90mm x 75mm", "unit": "NOS", "loss": 0.08 }
 ]

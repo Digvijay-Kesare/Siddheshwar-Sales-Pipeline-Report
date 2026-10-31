@@ -6,26 +6,21 @@ const supabase = createClient(
 );
 
 export async function GET(request: Request) {
-
   try {
-
     const { searchParams } = new URL(request.url);
-
     const surveyNo = searchParams.get("surveyNo");
 
     // Validation
     if (!surveyNo) {
-
       return Response.json(
         {
           success: false,
-          message: "Survey number required"
+          message: "Survey number required",
         },
         {
-          status: 400
+          status: 400,
         }
       );
-
     }
 
     // Fetch survey
@@ -37,62 +32,46 @@ export async function GET(request: Request) {
 
     // Error handling
     if (error) {
-
-      console.log("GET SURVEY ERROR:", error);
-
+      console.error("GET SURVEY ERROR:", error);
       return Response.json(
         {
           success: false,
-          message: error.message
+          message: error.message,
         },
         {
-          status: 500
+          status: 500,
         }
       );
-
     }
 
     // Get first survey safely
-    const survey =
-      data && data.length > 0
-        ? data[0]
-        : null;
+    const survey = data && data.length > 0 ? data[0] : null;
 
     // Not found
     if (!survey) {
-
       return Response.json(
         {
           success: false,
-          message: "Survey not found"
+          message: "Survey not found",
         },
         {
-          status: 404
+          status: 404,
         }
       );
-
     }
 
-    // Success
     return Response.json(survey);
-
-  } catch (error: any) {
-
-    console.log("FULL GET SURVEY ERROR:", error);
-
+  } catch (error: unknown) {
+    console.error("FULL GET SURVEY ERROR:", error);
     return Response.json(
       {
         success: false,
         message:
-          error instanceof Error
-            ? error.message
-            : "Unknown error"
+          error instanceof Error ? error.message : "Unknown error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }

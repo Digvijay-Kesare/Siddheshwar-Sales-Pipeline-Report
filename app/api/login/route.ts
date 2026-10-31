@@ -6,27 +6,24 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
+
 export async function POST(request: Request) {
-
   try {
-
     const body = await request.json();
-
     const { email, password } = body;
 
     // Validation
     if (!email || !password) {
-
       return Response.json(
         {
           success: false,
-          message: "Email and password required"
+          message: "Email and password are required",
         },
         {
-          status: 400
+          status: 400,
         }
       );
-
     }
 
     // Find user in Supabase
@@ -38,43 +35,39 @@ export async function POST(request: Request) {
 
     // User not found
     if (error || !user) {
-
       return Response.json(
         {
           success: false,
-          message: "Invalid email or password"
+          message: "Invalid email or password",
         },
         {
-          status: 401
+          status: 401,
         }
       );
-
     }
 
     // Password check
     if (user.password !== password) {
-
       return Response.json(
         {
           success: false,
-          message: "Invalid email or password"
+          message: "Invalid email or password",
         },
         {
-          status: 401
+          status: 401,
         }
       );
-
     }
 
     // Create JWT token
     const token = jwt.sign(
       {
         userId: user.id,
-        email: user.email
+        email: user.email,
       },
-      "SECRET_KEY",
+      JWT_SECRET,
       {
-        expiresIn: "1h"
+        expiresIn: "7d",
       }
     );
 
@@ -83,27 +76,22 @@ export async function POST(request: Request) {
       {
         success: true,
         message: "Login successful",
-        token
+        token,
       },
       {
-        status: 200
+        status: 200,
       }
     );
-
-  } catch (err: any) {
-
-    console.log(err);
-
+  } catch (err: unknown) {
+    console.error("Login error:", err);
     return Response.json(
       {
         success: false,
-        message: err.message
+        message: err instanceof Error ? err.message : "Server error",
       },
       {
-        status: 500
+        status: 500,
       }
     );
-
   }
-
 }

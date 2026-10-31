@@ -1,6 +1,13 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
+
+interface TokenPayload {
+  userId: string;
+  email?: string;
+}
+
 export async function POST(req: Request) {
   try {
     // Get Authorization Header
@@ -10,7 +17,7 @@ export async function POST(req: Request) {
       return Response.json(
         {
           success: false,
-          message: "Unauthorized",
+          message: "Unauthorized - No token provided",
         },
         {
           status: 401,
@@ -20,17 +27,23 @@ export async function POST(req: Request) {
 
     // Extract Token
     const token = authHeader.split(" ")[1];
+    if (!token) {
+      return Response.json(
+        {
+          success: false,
+          message: "Unauthorized - Malformed token",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
 
     // Verify Token
-    const decoded: any = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "SECRET_KEY"
-    );
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
     // Get Request Body
     const body = await req.json();
-
-    console.log("BODY:", body);
 
     // Insert Survey
     const { data, error } = await supabaseServer
@@ -39,7 +52,7 @@ export async function POST(req: Request) {
         customer: body.customer || "",
         village: body.village || "",
         discharge: body.discharge || "",
-        staticheight: body.staticHeight || "",
+        staticheight: body.staticHeight || body.staticheight || "",
         rows: body.rows || [],
         totalHead: body.totalHead || 0,
         userid: decoded.userId,
@@ -49,8 +62,7 @@ export async function POST(req: Request) {
 
     // Handle Database Error
     if (error) {
-      console.error("INSERT ERROR:", error);
-
+      console.error("INSERT SURVEY ERROR:", error);
       return Response.json(
         {
           success: false,
@@ -62,30 +74,25 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("INSERTED DATA:", data);
-
     // Success Response
     return Response.json(
       {
         success: true,
         message: "Survey created successfully",
-        surveyno: data.surveyno, // Auto-generated survey number
+        surveyno: data.surveyno,
         data,
       },
       {
         status: 201,
       }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("CREATE SURVEY ERROR:", error);
-
     return Response.json(
       {
         success: false,
         message:
-          error instanceof Error
-            ? error.message
-            : "Server error",
+          error instanceof Error ? error.message : "Server error",
       },
       {
         status: 500,
